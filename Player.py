@@ -2,7 +2,7 @@
 import pygame
 import pyganim
 
-class Player(pygame.sprite.Sprite):
+class player(pygame.sprite.Sprite):
 
 	STANDING = 0
 	WALKING = 1
@@ -19,32 +19,32 @@ class Player(pygame.sprite.Sprite):
 		self.angle = 0
 		self.speed = 0
 		self.action = self.STANDING
-		self.walking_anim = pyganim.PygAnimation([('man_walking_1.png', 0.2),
-												  ('man_walking_2.png', 0.2),
-												  ('man_walking_3.png', 0.2),
-												  ('man_walking_4.png', 0.2),
-												  ('man_walking_5.png', 0.2),
-												  ('man_walking_6.png', 0.2)])
-		self.running_anim = pyganim.PygAnimation([('man_running_1.png', 0.1),
-												  ('man_running_2.png', 0.1),
-												  ('man_running_3.png', 0.1),
-												  ('man_running_4.png', 0.1),
-												  ('man_running_5.png', 0.1),
-												  ('man_running_6.png', 0.1)])
+		self.walking_anim = pyganim.PygAnimation([('sprites/man_walking_1.png', 0.2),
+												  ('sprites/man_walking_2.png', 0.2),
+												  ('sprites/man_walking_3.png', 0.2),
+												  ('sprites/man_walking_4.png', 0.2),
+												  ('sprites/man_walking_5.png', 0.2),
+												  ('sprites/man_walking_6.png', 0.2)])
+		self.running_anim = pyganim.PygAnimation([('sprites/man_running_1.png', 0.1),
+												  ('sprites/man_running_2.png', 0.1),
+												  ('sprites/man_running_3.png', 0.1),
+												  ('sprites/man_running_4.png', 0.1),
+												  ('sprites/man_running_5.png', 0.1),
+												  ('sprites/man_running_6.png', 0.1)])
 		self.current_anim = self.walking_anim
 		
 	def simulate(self):
-		if self.action == Player.RUNNING:
+		if self.action == player.RUNNING:
 			self.speed = 10
 			self.walking_anim.pause()
 			self.running_anim.play()
 			self.current_anim = self.running_anim
-		elif self.action == Player.WALKING:
+		elif self.action == player.WALKING:
 			self.speed = 5
 			self.walking_anim.play()
 			self.running_anim.pause()
 			self.current_anim = self.walking_anim
-		elif self.action == Player.STANDING:
+		elif self.action == player.STANDING:
 			self.speed = 0
 			self.walking_anim.stop()
 			self.running_anim.stop()

@@ -1,9 +1,9 @@
 
-import Game
+from game import game
 
 def main():
-	game = Game(1600, 900, True, 60)
-	game.run()
+	app = game(1600, 900, True, 60)
+	app.run()
 
 if __name__ == '__main__':
 	main()

@@ -1,9 +1,9 @@
 
 import pygame
-import Player
-import Map
+import math
+from player import player
 
-class Game():
+class game():
 
 	def __init__(self, screen_width = 1024, screen_height = 768, fullscreen = True, fps = 60):
 		self.running = False
@@ -26,7 +26,7 @@ class Game():
 			pygame_options = pygame.HWSURFACE
 		self.screen = pygame.display.set_mode(self.screen_size, pygame_options)
 		self.set_icon('icon.png')
-		self.player = Player.Player(self.screen_center_x, self.screen_center_y)
+		self.player = player(self.screen_center_x, self.screen_center_y)
 		self.group = pygame.sprite.Group(self.player)
 		
 	def set_icon(self, image):
@@ -62,11 +62,11 @@ class Game():
 		if self.key_down[pygame.K_ESCAPE]:
 			self.running = False
 		if self.key_down[pygame.K_w] & self.key_down[pygame.K_LSHIFT]:
-			self.player.action = Player.RUNNING
+			self.player.action = player.RUNNING
 		elif self.key_down[pygame.K_w]:
-			self.player.action = Player.WALKING
+			self.player.action = player.WALKING
 		else:
-			self.player.action = Player.STANDING
+			self.player.action = player.STANDING
 		dx = self.mouse_x - self.screen_center_x
 		dy = self.mouse_y - self.screen_center_y
 		self.player.angle = (math.atan2(dx, dy) * 180) / math.pi
