@@ -2,6 +2,7 @@
 import pygame
 import math
 from player import player
+from map import map
 
 class game():
 
@@ -28,6 +29,7 @@ class game():
 		self.set_icon('icon.png')
 		self.player = player(self.screen_center_x, self.screen_center_y)
 		self.group = pygame.sprite.Group(self.player)
+		self.map = map('maps/desert.tmx', self.screen)
 		
 	def set_icon(self, image):
 		self.icon_surface = pygame.image.load(image)
@@ -63,20 +65,27 @@ class game():
 			self.running = False
 		if self.key_down[pygame.K_w] & self.key_down[pygame.K_LSHIFT]:
 			self.player.action = player.RUNNING
+			self.map.speed = 2
 		elif self.key_down[pygame.K_w]:
 			self.player.action = player.WALKING
+			self.map.speed = 1
 		else:
 			self.player.action = player.STANDING
+			self.map.speed = 0
 		dx = self.mouse_x - self.screen_center_x
 		dy = self.mouse_y - self.screen_center_y
 		self.player.angle = (math.atan2(dx, dy) * 180) / math.pi
+		self.map.angle = math.radians(self.player.angle + 90) 
+		print("player: " + str(self.player.angle) + ", map: " + str(self.map.angle))
 		self.player.simulate()
 		
 	def update(self):
+		self.map.update()
 		self.group.update()
 		
 	def draw(self):
 		self.screen.fill((0, 0, 0))
+		self.map.draw(self.screen)
 		self.group.draw(self.screen)
 		pygame.display.flip()
 		
