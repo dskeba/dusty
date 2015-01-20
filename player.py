@@ -17,7 +17,6 @@ class player(pygame.sprite.Sprite):
 		self.rect = pygame.Rect(width, height, self.center_x - (width / 2), self.center_y - (height / 2))
 		self.start_angle = 180
 		self.angle = 0
-		self.speed = 0
 		self.action = self.STANDING
 		self.walking_anim = pyganim.PygAnimation([('sprites/man_walking_1.png', 0.2),
 												  ('sprites/man_walking_2.png', 0.2),
@@ -35,17 +34,14 @@ class player(pygame.sprite.Sprite):
 		
 	def simulate(self):
 		if self.action == player.RUNNING:
-			self.speed = 10
 			self.walking_anim.pause()
 			self.running_anim.play()
 			self.current_anim = self.running_anim
 		elif self.action == player.WALKING:
-			self.speed = 5
 			self.walking_anim.play()
 			self.running_anim.pause()
 			self.current_anim = self.walking_anim
 		elif self.action == player.STANDING:
-			self.speed = 0
 			self.walking_anim.stop()
 			self.running_anim.stop()
 			self.current_anim = self.walking_anim
