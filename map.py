@@ -11,34 +11,35 @@ class map():
 		self.__load_walls(tmx_data)
 		map_data = pyscroll.data.TiledMapData(tmx_data)
 		self.map_layer = pyscroll.BufferedRenderer(map_data, screen.get_size())
-		self.x = 0
-		self.y = 0
-		self.angle = 0
-		self.speed = 0
+		self.screen_x = 0
+		self.screen_y = 0
 		self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer,default_layer=2)
 		
 	def __load_walls(self, tmx_data):
 		self.walls = list()
 		for object in tmx_data.objects:
 			print("adding object w/ x: " + str(object.x) + " y:" + str(object.y))
-			self.walls.append(pygame.Rect(object.x, object.y,object.width, object.height))
+			self.walls.append(pygame.Rect(object.x, object.y, object.width, object.height))
 	
 	def add_sprite(self, sprite):
 		self.group.add(sprite)
 		
 	def update(self):
+		self.group.update(0)
 		for sprite in self.group.sprites():
-			index = sprite.rect.collidelist(self.walls)
-			if index > -1:
-				print("COLLISION! w/ x: " + str(self.walls[index].x) + " y:" + str(self.walls[index].y))
-			else:
-				delta_x = math.cos(self.angle) * self.speed
-				delta_y = math.sin(self.angle) * self.speed
-				self.x = self.x + delta_x
-				self.y = self.y - delta_y
+			for wall in self.walls:
+				if wall.collidepoint(sprite.rect.center):
+					sprite.move_back()
+					
+			#idx = sprite.rect.collidelist(self.walls)
+			#if idx > -1:
+			#	print("sprite left: " + str(sprite.rect.left) + " top: " + str(sprite.rect.top))
+			#	print("COLLISION! w/ x: " + str(self.walls[idx].x) + " y:" + str(self.walls[idx].y))
 
-	def draw(self, surface):
-		rect = surface.get_rect()
-		rect.left = self.x
-		rect.top = self.y
-		self.map_layer.draw(surface, rect)
+	def draw(self, surface, center = None):
+		#rect = surface.get_rect()
+		#rect.left = self.screen_x
+		#rect.top = self.screen_y
+		if center:
+			self.group.center(center)
+		self.group.draw(surface)

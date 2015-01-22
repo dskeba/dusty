@@ -27,8 +27,7 @@ class game():
 			pygame_options = pygame.HWSURFACE
 		self.screen = pygame.display.set_mode(self.screen_size, pygame_options)
 		self.set_icon('icon.png')
-		self.player = player(self.screen_center_x, self.screen_center_y)
-		self.group = pygame.sprite.Group(self.player)
+		self.player = player(self.screen)
 		self.map = map('maps/grasslands.tmx', self.screen)
 		self.map.add_sprite(self.player)
 		
@@ -57,7 +56,6 @@ class game():
 		events = pygame.event.get()
 		for event in events:
 			if event.type == pygame.KEYDOWN:
-				print(event.key)
 				self.key_down[event.key] = True
 			elif event.type == pygame.KEYUP:
 				self.key_down[event.key] = False
@@ -68,36 +66,37 @@ class game():
 			self.running = False
 		if self.key_down[pygame.K_w] & self.key_down[pygame.K_LSHIFT]:
 			self.player.action = player.RUNNING
-			self.map.speed = 4
+			self.player.speed = 4
 		elif self.key_down[pygame.K_w]:
 			self.player.action = player.WALKING
-			self.map.speed = 2
+			self.player.speed = 2
 		elif self.key_down[pygame.K_s]:
 			self.player.action = player.WALKING
-			self.map.speed = -2
+			self.player.speed = -2
 		else:
 			self.player.action = player.STANDING
-			self.map.speed = 0
+			self.player.speed = 0
 		dx = self.mouse_x - self.screen_center_x
 		dy = self.mouse_y - self.screen_center_y
-		self.player.angle = (math.atan2(dx, dy) * 180) / math.pi
-		self.map.angle = math.radians(self.player.angle + 90) 
-		#print("player: " + str(self.player.angle) + ", map: " + str(self.map.angle))
+		angle = (math.atan2(dx, dy) * 180) / math.pi
+		if (angle != self.player.angle) & (self.player.action == player.STANDING):
+			self.player.action = player.ROTATING
+		self.player.angle = angle
 		self.player.simulate()
 		
 	def update(self):
 		self.map.update()
-		self.group.update()
 		
 	def draw(self):
 		self.screen.fill((0, 0, 0))
-		self.map.draw(self.screen)
-		self.group.draw(self.screen)
+		if self.player.action == player.ROTATING:
+			self.map.draw(self.screen)
+		else:
+			self.map.draw(self.screen, self.player.rect.center)
 		pygame.display.flip()
 		
 	def tick(self):
 		self.clock.tick(self.fps)
-		#print("FPS: " + str(self.clock.get_fps()))
 	
 	def cleanup(self):
 		pygame.quit()
