@@ -6,14 +6,14 @@ from map import map
 
 class game():
 
-	def __init__(self, screen_width = 1024, screen_height = 768, fullscreen = True, fps = 60):
+	def __init__(self, screen_width, screen_height, windowed, fps):
 		self.running = False
 		self.screen_width = screen_width
 		self.screen_height = screen_height
 		self.screen_center_x = self.screen_width / 2
 		self.screen_center_y = self.screen_height / 2
 		self.screen_size = (self.screen_width, self.screen_height)
-		self.fullscreen = fullscreen
+		self.windowed = windowed
 		self.fps = fps
 		self.mouse_x = 0
 		self.mouse_y = 0
@@ -21,15 +21,16 @@ class game():
 		pygame.init()
 		self.init_keys()
 		self.clock = pygame.time.Clock()
-		if self.fullscreen:
-			pygame_options = pygame.HWSURFACE | pygame.FULLSCREEN
+		if self.windowed:
+			pygame_options = pygame.HWSURFACE | pygame.DOUBLEBUF
 		else:
-			pygame_options = pygame.HWSURFACE
+			pygame_options = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.FULLSCREEN
 		self.screen = pygame.display.set_mode(self.screen_size, pygame_options)
 		self.set_icon('icon.png')
 		self.player = player(self.screen)
 		self.map = map('maps/grasslands.tmx', self.screen)
 		self.map.add_sprite(self.player)
+		pygame.mouse.set_cursor(*pygame.cursors.broken_x)
 		
 	def set_icon(self, image):
 		self.icon_surface = pygame.image.load(image)
@@ -66,12 +67,12 @@ class game():
 			self.running = False
 		if self.key_down[pygame.K_w] & self.key_down[pygame.K_LSHIFT]:
 			self.player.action = player.RUNNING
-			self.player.speed = 4
+			self.player.speed = 3
 		elif self.key_down[pygame.K_w]:
 			self.player.action = player.WALKING
 			self.player.speed = 2
 		elif self.key_down[pygame.K_s]:
-			self.player.action = player.WALKING
+			self.player.action = player.BACKSTEPPING
 			self.player.speed = -2
 		else:
 			self.player.action = player.STANDING

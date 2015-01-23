@@ -10,6 +10,7 @@ class player(pygame.sprite.Sprite):
 	WALKING = 1
 	RUNNING = 2
 	ROTATING = 3
+	BACKSTEPPING = 4
 
 	def __init__(self, screen):
 		pygame.sprite.Sprite.__init__(self)
@@ -40,7 +41,7 @@ class player(pygame.sprite.Sprite):
 		self.current_anim = self.walking_anim
 		pygame.mixer.pre_init()
 		self.channel = pygame.mixer.Channel(0)
-		self.channel.set_volume(0.5)
+		self.channel.set_volume(0.25)
 		self.footsteps = pygame.mixer.Sound('sounds/footstep.wav')
 		
 	def simulate(self):
@@ -61,6 +62,12 @@ class player(pygame.sprite.Sprite):
 			self.running_anim.stop()
 			self.current_anim = self.walking_anim
 			self.channel.stop()
+		elif self.action == player.BACKSTEPPING:
+			self.walking_anim.play()
+			self.running_anim.pause()
+			self.current_anim = self.walking_anim
+			if not self.channel.get_busy():
+				self.channel.play(self.footsteps)
 			
 	def move_back(self):
 		self.map_x = self.old_map_x
