@@ -4,7 +4,7 @@ import pytmx
 import pyscroll
 import math
 
-class map():
+class Map():
 	
 	def __init__(self, filename, screen):
 		self.tmx_data = pytmx.load_pygame(filename)

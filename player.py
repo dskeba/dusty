@@ -4,7 +4,7 @@ import pyganim
 import math
 import os
 
-class player(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite):
 
 	STANDING = 0
 	WALKING = 1
@@ -12,11 +12,13 @@ class player(pygame.sprite.Sprite):
 	ROTATING = 3
 	BACKSTEPPING = 4
 
-	def __init__(self, screen):
+	def __init__(self, game):
 		pygame.sprite.Sprite.__init__(self)
 		self.width = 80
 		self.height = 80
-		self.screen = screen
+		self.game = game
+		self.sound_manager = self.game.sound_manager
+		self.screen = self.game.screen
 		self.map_x = 500
 		self.old_map_x = 0
 		self.map_y = 500
@@ -39,35 +41,33 @@ class player(pygame.sprite.Sprite):
 												  ('sprites/man_running_5.png', 0.1),
 												  ('sprites/man_running_6.png', 0.1)])
 		self.current_anim = self.walking_anim
-		pygame.mixer.pre_init()
-		self.channel = pygame.mixer.Channel(0)
-		self.channel.set_volume(0.25)
-		self.footsteps = pygame.mixer.Sound('sounds/footstep.wav')
+		self.footsteps = self.sound_manager.load('sounds/footstep.wav')
 		
 	def simulate(self):
-		if self.action == player.RUNNING:
+		if self.action == Player.RUNNING:
 			self.walking_anim.pause()
 			self.running_anim.play()
 			self.current_anim = self.running_anim
-			if not self.channel.get_busy():
-				self.channel.play(self.footsteps)
-		elif self.action == player.WALKING:
+			self.sound_manager.set_volume(self.footsteps, 0.6)
+			self.sound_manager.play(self.footsteps, True)
+		elif self.action == Player.WALKING:
 			self.walking_anim.play()
 			self.running_anim.pause()
 			self.current_anim = self.walking_anim
-			if not self.channel.get_busy():
-				self.channel.play(self.footsteps)
-		elif self.action == player.STANDING:
+			self.sound_manager.set_volume(self.footsteps, 0.2)
+			self.sound_manager.play(self.footsteps, True)
+			print(self.sound_manager.get_volume(self.footsteps))
+		elif self.action == Player.STANDING:
 			self.walking_anim.stop()
 			self.running_anim.stop()
 			self.current_anim = self.walking_anim
-			self.channel.stop()
-		elif self.action == player.BACKSTEPPING:
+			self.sound_manager.stop(self.footsteps, True)
+		elif self.action == Player.BACKSTEPPING:
 			self.walking_anim.play()
 			self.running_anim.pause()
 			self.current_anim = self.walking_anim
-			if not self.channel.get_busy():
-				self.channel.play(self.footsteps)
+			self.sound_manager.set_volume(self.footsteps, 0.2)
+			self.sound_manager.play(self.footsteps, True)
 			
 	def move_back(self):
 		self.map_x = self.old_map_x

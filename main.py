@@ -1,9 +1,9 @@
 
-from game import game
+from Game import Game
 from Launcher import Launcher
 
 def main():
-	launcher_gui = Launcher(play)
+	menu = Launcher(play)
 
 def play(resolution, fps, windowed, double_buffered, sound_enabled):
 	res_width = 800
@@ -24,7 +24,7 @@ def play(resolution, fps, windowed, double_buffered, sound_enabled):
 		res_width, res_height = 1600, 900
 	elif resolution == "1920 x 1080 (16:9)":
 		res_width, res_height = 1920, 1080
-	app = game(res_width, res_height, windowed, fps)
+	app = Game(res_width, res_height, windowed, fps, double_buffered, sound_enabled)
 	app.run()
 	
 if __name__ == '__main__':

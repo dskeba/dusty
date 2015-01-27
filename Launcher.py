@@ -57,11 +57,19 @@ class Launcher():
 		
 	def play(self):
 		self.destroy()
-		if self.windowed_var.get() == '1':
+		if self.windowed_var.get() == 1:
 			windowed = True
 		else:
 			windowed = False
-		self.callback(self.resolution_var.get(), float(self.fps_var.get()), windowed, self.double_buffered_var.get(), self.sound_enabled_var.get())
+		if self.double_buffered_var.get() == 1:
+			double_buffered = True
+		else:
+			double_buffered = False
+		if self.sound_enabled_var.get() == 1:
+			sound_enabled = True
+		else:
+			sound_enabled = False
+		self.callback(self.resolution_var.get(), float(self.fps_var.get()), windowed, double_buffered, sound_enabled)
 		
 	def destroy(self):
 		self.gui.destroy()
