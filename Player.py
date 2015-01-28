@@ -3,6 +3,8 @@ import pygame
 import pyganim
 import math
 import os
+from Inventory import Inventory
+from Item import Item
 
 class Player(pygame.sprite.Sprite):
 
@@ -28,6 +30,8 @@ class Player(pygame.sprite.Sprite):
 		self.angle = 0
 		self.speed = 0
 		self.action = self.STANDING
+		self.inventory = Inventory()
+		self.inventory.add_active(Item('rock'))
 		self.walking_anim = pyganim.PygAnimation([('sprites/man_walking_1.png', 0.2),
 												  ('sprites/man_walking_2.png', 0.2),
 												  ('sprites/man_walking_3.png', 0.2),
@@ -40,31 +44,53 @@ class Player(pygame.sprite.Sprite):
 												  ('sprites/man_running_4.png', 0.1),
 												  ('sprites/man_running_5.png', 0.1),
 												  ('sprites/man_running_6.png', 0.1)])
+		self.running_stone_anim = pyganim.PygAnimation([('sprites/man_running_stone_1.png', 0.1),
+												  ('sprites/man_running_stone_2.png', 0.1),
+												  ('sprites/man_running_stone_3.png', 0.1),
+												  ('sprites/man_running_stone_4.png', 0.1),
+												  ('sprites/man_running_stone_5.png', 0.1),
+												  ('sprites/man_running_stone_6.png', 0.1)])
 		self.current_anim = self.walking_anim
 		self.footsteps = self.sound_manager.load('sounds/footstep.wav')
 		
 	def simulate(self):
 		if self.action == Player.RUNNING:
-			self.walking_anim.pause()
-			self.running_anim.play()
-			self.current_anim = self.running_anim
-			self.sound_manager.set_volume(self.footsteps, 0.6)
+			self.current_anim.pause()
+			if self.inventory.is_holding_item():
+				if self.inventory.get_holding_item().type == 'rock':
+					self.current_anim = self.running_stone_anim
+			else:
+				self.current_anim = self.running_anim
+			self.current_anim.play()
+			self.sound_manager.set_volume(self.footsteps, 0.4)
 			self.sound_manager.play(self.footsteps, True)
 		elif self.action == Player.WALKING:
-			self.walking_anim.play()
-			self.running_anim.pause()
-			self.current_anim = self.walking_anim
+			self.current_anim.pause()
+			if self.inventory.is_holding_item():
+				if self.inventory.get_holding_item().type == 'rock':
+					self.current_anim = self.running_stone_anim
+			else:
+				self.current_anim = self.walking_anim
+			self.current_anim.play()
 			self.sound_manager.set_volume(self.footsteps, 0.2)
 			self.sound_manager.play(self.footsteps, True)
 		elif self.action == Player.STANDING:
-			self.walking_anim.stop()
-			self.running_anim.stop()
-			self.current_anim = self.walking_anim
+			self.current_anim.pause()
+			if self.inventory.is_holding_item():
+				if self.inventory.get_holding_item().type == 'rock':
+					self.current_anim = self.running_stone_anim
+			else:
+				self.current_anim = self.walking_anim
+			self.current_anim.stop()
 			self.sound_manager.stop(self.footsteps, True)
 		elif self.action == Player.BACKSTEPPING:
-			self.walking_anim.play()
-			self.running_anim.pause()
-			self.current_anim = self.walking_anim
+			self.current_anim.pause()
+			if self.inventory.is_holding_item():
+				if self.inventory.get_holding_item().type == 'rock':
+					self.current_anim = self.running_stone_anim
+			else:
+				self.current_anim = self.walking_anim
+			self.current_anim.play()
 			self.sound_manager.set_volume(self.footsteps, 0.2)
 			self.sound_manager.play(self.footsteps, True)
 			

@@ -20,7 +20,6 @@ class Game():
 		self.sound_enabled = sound_enabled
 		self.mouse_x = 0
 		self.mouse_y = 0
-		self.key_down = {}
 		pygame.init()
 		self.init_keys()
 		self.clock = pygame.time.Clock()
@@ -45,11 +44,20 @@ class Game():
 		pygame.display.set_icon(self.icon_surface)
 		
 	def init_keys(self):
+		self.key_down = {}
+		self.key_down[pygame.K_1] = False
 		self.key_down[pygame.K_w] = False
 		self.key_down[pygame.K_s] = False
 		self.key_down[pygame.K_LSHIFT] = False
 		self.key_down[pygame.K_ESCAPE] = False
 		self.key_down[pygame.K_SPACE] = False
+		self.key_up = {}
+		self.key_up[pygame.K_1] = False
+		self.key_up[pygame.K_w] = False
+		self.key_up[pygame.K_s] = False
+		self.key_up[pygame.K_LSHIFT] = False
+		self.key_up[pygame.K_ESCAPE] = False
+		self.key_up[pygame.K_SPACE] = False
 		
 	def run(self):
 		self.running = True
@@ -62,17 +70,28 @@ class Game():
 		self.cleanup()
 	
 	def input(self):
+		for key in self.key_up:
+			self.key_up[key] = False
 		events = pygame.event.get()
 		for event in events:
 			if event.type == pygame.KEYDOWN:
 				self.key_down[event.key] = True
 			elif event.type == pygame.KEYUP:
+				self.key_up[event.key] = True
 				self.key_down[event.key] = False
 		self.mouse_x, self.mouse_y = pygame.mouse.get_pos()
 		
 	def simulate(self):
+		# Check for game quit
 		if self.key_down[pygame.K_ESCAPE]:
 			self.running = False
+		# Check for inventory keys
+		if self.key_up[pygame.K_1]:
+			if self.player.inventory.get_holding_slot() == 0:
+				self.player.inventory.set_holding_slot(-1)
+			else:
+				self.player.inventory.set_holding_slot(0)
+		# Check for movement keys
 		if self.key_down[pygame.K_w] & self.key_down[pygame.K_LSHIFT]:
 			self.player.action = Player.RUNNING
 			self.player.speed = 3
@@ -85,6 +104,7 @@ class Game():
 		else:
 			self.player.action = Player.STANDING
 			self.player.speed = 0
+		# calculate player direction from mouse coordinates
 		dx = self.mouse_x - self.screen_center_x
 		dy = self.mouse_y - self.screen_center_y
 		angle = (math.atan2(dx, dy) * 180) / math.pi
