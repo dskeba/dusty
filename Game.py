@@ -36,7 +36,7 @@ class Game():
 		self.sound_manager = SoundManager(self.sound_enabled)
 		self.set_icon('icon.png')
 		self.player = Player(self)
-		self.map = Map('maps/grasslands.tmx', self.screen)
+		self.map = Map('maps/dusty1/dusty1.tmx', self.screen)
 		self.map.add_sprite(self.player)
 		pygame.mouse.set_cursor(*pygame.cursors.broken_x)
 		

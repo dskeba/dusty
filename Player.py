@@ -56,7 +56,6 @@ class Player(pygame.sprite.Sprite):
 			self.current_anim = self.walking_anim
 			self.sound_manager.set_volume(self.footsteps, 0.2)
 			self.sound_manager.play(self.footsteps, True)
-			print(self.sound_manager.get_volume(self.footsteps))
 		elif self.action == Player.STANDING:
 			self.walking_anim.stop()
 			self.running_anim.stop()
