@@ -13,6 +13,11 @@ class Player(pygame.sprite.Sprite):
 	RUNNING = 2
 	ROTATING = 3
 	BACKSTEPPING = 4
+	PRIMARY_ROCK = 10
+	
+	NONE = 0
+	PRIMARY = 1
+	SECONDARY = 2
 
 	def __init__(self, game):
 		pygame.sprite.Sprite.__init__(self)
@@ -29,7 +34,7 @@ class Player(pygame.sprite.Sprite):
 		self.start_angle = 180
 		self.angle = 0
 		self.speed = 0
-		self.action = self.STANDING
+		self.state = self.STANDING
 		self.inventory = Inventory()
 		self.inventory.add_active(Item('rock'))
 		self.walking_anim = pyganim.PygAnimation([('sprites/man_walking_1.png', 0.2),
@@ -50,11 +55,17 @@ class Player(pygame.sprite.Sprite):
 												  ('sprites/man_running_stone_4.png', 0.1),
 												  ('sprites/man_running_stone_5.png', 0.1),
 												  ('sprites/man_running_stone_6.png', 0.1)])
+		self.primary_stone_anim = pyganim.PygAnimation([('sprites/man_primary_stone_1.png', 0.2),
+												  ('sprites/man_primary_stone_2.png', 0.2),
+												  ('sprites/man_primary_stone_3.png', 0.2),
+												  ('sprites/man_primary_stone_4.png', 0.2),
+												  ('sprites/man_primary_stone_5.png', 0.2)])
 		self.current_anim = self.walking_anim
+		self.action_step = 0
 		self.footsteps = self.sound_manager.load('sounds/footstep.wav')
 		
 	def simulate(self):
-		if self.action == Player.RUNNING:
+		if self.state == Player.RUNNING:
 			self.current_anim.pause()
 			if self.inventory.is_holding_item():
 				if self.inventory.get_holding_item().type == 'rock':
@@ -64,7 +75,7 @@ class Player(pygame.sprite.Sprite):
 			self.current_anim.play()
 			self.sound_manager.set_volume(self.footsteps, 0.4)
 			self.sound_manager.play(self.footsteps, True)
-		elif self.action == Player.WALKING:
+		elif self.state == Player.WALKING:
 			self.current_anim.pause()
 			if self.inventory.is_holding_item():
 				if self.inventory.get_holding_item().type == 'rock':
@@ -74,7 +85,7 @@ class Player(pygame.sprite.Sprite):
 			self.current_anim.play()
 			self.sound_manager.set_volume(self.footsteps, 0.2)
 			self.sound_manager.play(self.footsteps, True)
-		elif self.action == Player.STANDING:
+		elif self.state == Player.STANDING:
 			self.current_anim.pause()
 			if self.inventory.is_holding_item():
 				if self.inventory.get_holding_item().type == 'rock':
@@ -83,7 +94,7 @@ class Player(pygame.sprite.Sprite):
 				self.current_anim = self.walking_anim
 			self.current_anim.stop()
 			self.sound_manager.stop(self.footsteps, True)
-		elif self.action == Player.BACKSTEPPING:
+		elif self.state == Player.BACKSTEPPING:
 			self.current_anim.pause()
 			if self.inventory.is_holding_item():
 				if self.inventory.get_holding_item().type == 'rock':
@@ -93,6 +104,64 @@ class Player(pygame.sprite.Sprite):
 			self.current_anim.play()
 			self.sound_manager.set_volume(self.footsteps, 0.2)
 			self.sound_manager.play(self.footsteps, True)
+		elif self.state == Player.ROTATING:
+			self.current_anim.pause()
+			if self.inventory.is_holding_item():
+				if self.inventory.get_holding_item().type == 'rock':
+					self.current_anim = self.running_stone_anim
+			else:
+				self.current_anim = self.walking_anim
+			self.current_anim.stop()
+			self.sound_manager.stop(self.footsteps, True)
+		elif self.state == Player.PRIMARY_ROCK:
+			self.action_step = self.action_step + 1
+			if self.action_step > 60:
+				self.action_step = 0
+				self.current_anim.stop()
+			else:
+				self.current_anim.pause()
+				self.current_anim = self.primary_stone_anim
+				self.current_anim.play()
+			
+	def set_holding_slot(self, slot):
+		if self.inventory.get_holding_slot() == slot:
+			self.inventory.set_holding_slot(-1)
+		else:
+			self.inventory.set_holding_slot(slot)
+			
+	def set_action(self, action):
+		if self.action_step > 0:
+			return
+		if self.inventory.is_holding_item():
+			if self.inventory.get_holding_item().type == 'rock':
+				if action == Player.PRIMARY:
+					self.state = Player.PRIMARY_ROCK
+					self.action_step = 1
+					self.speed = 0
+			
+	def set_state(self, state):
+		if self.action_step > 0:
+			return
+		if state == Player.RUNNING:
+			self.state = Player.RUNNING
+			self.speed = 3
+		elif state == Player.WALKING:
+			self.state = Player.WALKING
+			self.speed = 2
+		elif state == Player.BACKSTEPPING:
+			self.state = Player.BACKSTEPPING
+			self.speed = -2
+		elif state == Player.STANDING:
+			self.state = Player.STANDING
+			self.speed = 0
+			
+	def get_state(self):
+		return self.state
+			
+	def set_angle(self, angle):
+		if (angle != self.angle) & (self.state == Player.STANDING):
+			self.state = Player.ROTATING
+		self.angle = angle
 			
 	def move_back(self):
 		self.map_x = self.old_map_x

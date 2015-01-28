@@ -14,7 +14,7 @@ class Map():
 		self.screen = screen
 		self.screen_x = 0
 		self.screen_y = 0
-		self.group = pyscroll.PyscrollGroup(map_layer = self.map_layer, default_layer = 2)
+		self.group = pyscroll.PyscrollGroup(map_layer = self.map_layer, default_layer = 1)
 		
 	def load_objects(self, tmx_data):
 		self.objects = list()

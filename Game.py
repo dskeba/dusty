@@ -46,6 +46,7 @@ class Game():
 	def init_keys(self):
 		self.key_down = {}
 		self.key_down[pygame.K_1] = False
+		self.key_down[pygame.K_2] = False
 		self.key_down[pygame.K_w] = False
 		self.key_down[pygame.K_s] = False
 		self.key_down[pygame.K_LSHIFT] = False
@@ -53,11 +54,18 @@ class Game():
 		self.key_down[pygame.K_SPACE] = False
 		self.key_up = {}
 		self.key_up[pygame.K_1] = False
+		self.key_up[pygame.K_2] = False
 		self.key_up[pygame.K_w] = False
 		self.key_up[pygame.K_s] = False
 		self.key_up[pygame.K_LSHIFT] = False
 		self.key_up[pygame.K_ESCAPE] = False
 		self.key_up[pygame.K_SPACE] = False
+		self.mouse_down = {}
+		self.mouse_down[1] = False
+		self.mouse_down[3] = False
+		self.mouse_up = {}
+		self.mouse_up[1] = False
+		self.mouse_up[3] = False
 		
 	def run(self):
 		self.running = True
@@ -72,6 +80,8 @@ class Game():
 	def input(self):
 		for key in self.key_up:
 			self.key_up[key] = False
+		for button in self.mouse_up:
+			self.mouse_up[button] = False
 		events = pygame.event.get()
 		for event in events:
 			if event.type == pygame.KEYDOWN:
@@ -79,6 +89,11 @@ class Game():
 			elif event.type == pygame.KEYUP:
 				self.key_up[event.key] = True
 				self.key_down[event.key] = False
+			elif event.type == pygame.MOUSEBUTTONDOWN:
+				self.mouse_down[event.button] = True
+			elif event.type == pygame.MOUSEBUTTONUP:
+				self.mouse_up[event.button] = True
+				self.mouse_down[event.button] = False
 		self.mouse_x, self.mouse_y = pygame.mouse.get_pos()
 		
 	def simulate(self):
@@ -87,30 +102,28 @@ class Game():
 			self.running = False
 		# Check for inventory keys
 		if self.key_up[pygame.K_1]:
-			if self.player.inventory.get_holding_slot() == 0:
-				self.player.inventory.set_holding_slot(-1)
-			else:
-				self.player.inventory.set_holding_slot(0)
+			self.player.set_holding_slot(0)
+		elif self.key_up[pygame.K_2]:
+			self.player.set_holding_slot(1)
 		# Check for movement keys
 		if self.key_down[pygame.K_w] & self.key_down[pygame.K_LSHIFT]:
-			self.player.action = Player.RUNNING
-			self.player.speed = 3
+			self.player.set_state(Player.RUNNING)
 		elif self.key_down[pygame.K_w]:
-			self.player.action = Player.WALKING
-			self.player.speed = 2
+			self.player.set_state(Player.WALKING)
 		elif self.key_down[pygame.K_s]:
-			self.player.action = Player.BACKSTEPPING
-			self.player.speed = -2
+			self.player.set_state(Player.BACKSTEPPING)
 		else:
-			self.player.action = Player.STANDING
-			self.player.speed = 0
+			self.player.set_state(Player.STANDING)
+		# check for mouse buttons
+		if self.mouse_down[1]:
+			self.player.set_action(Player.PRIMARY)
+		elif self.mouse_down[3]:
+			self.player.set_action(Player.SECONDARY)
 		# calculate player direction from mouse coordinates
 		dx = self.mouse_x - self.screen_center_x
 		dy = self.mouse_y - self.screen_center_y
 		angle = (math.atan2(dx, dy) * 180) / math.pi
-		if (angle != self.player.angle) & (self.player.action == Player.STANDING):
-			self.player.action = Player.ROTATING
-		self.player.angle = angle
+		self.player.set_angle(angle)
 		self.player.simulate()
 		
 	def update(self):
@@ -118,9 +131,11 @@ class Game():
 		
 	def draw(self):
 		self.screen.fill((0, 0, 0))
-		if self.player.action == Player.ROTATING:
+		if (self.player.get_state() == Player.ROTATING) | (self.player.get_state() == Player.PRIMARY_ROCK):
+			print("not center")
 			self.map.draw(self.screen)
 		else:
+			print("center")
 			self.map.draw(self.screen, self.player.rect.center)
 		pygame.display.flip()
 		

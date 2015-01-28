@@ -47,7 +47,10 @@ class Inventory():
 		return item
 		
 	def set_holding_slot(self, slot):
-		self.holding_slot = slot
+		if self.active[slot] != None:
+			self.holding_slot = slot
+		else:
+			self.holding_slot = -1
 		
 	def get_holding_slot(self):
 		return self.holding_slot
