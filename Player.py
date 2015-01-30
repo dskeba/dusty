@@ -124,6 +124,7 @@ class Player(pygame.sprite.Sprite):
 				self.current_anim.play()
 			
 	def set_holding_slot(self, slot):
+		self.action_step = 0
 		if self.inventory.get_holding_slot() == slot:
 			self.inventory.set_holding_slot(-1)
 		else:
