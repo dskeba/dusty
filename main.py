@@ -6,8 +6,8 @@ def main():
 	menu = Launcher(play)
 
 def play(resolution, fps, windowed, double_buffered, sound_enabled):
-	res_width = 800
-	res_height = 600
+	res_width = 1024
+	res_height = 768
 	if resolution == "800 x 600 (4:3)":
 		res_width, res_height = 800, 600
 	elif resolution == "1024 x 768 (4:3)":
