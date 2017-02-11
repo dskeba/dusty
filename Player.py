@@ -37,29 +37,29 @@ class Player(pygame.sprite.Sprite):
 		self.state = self.STANDING
 		self.inventory = Inventory()
 		self.inventory.add_active(Item('rock'))
-		self.walking_anim = pyganim.PygAnimation([('sprites/man_walking_1.png', 0.2),
-												  ('sprites/man_walking_2.png', 0.2),
-												  ('sprites/man_walking_3.png', 0.2),
-												  ('sprites/man_walking_4.png', 0.2),
-												  ('sprites/man_walking_5.png', 0.2),
-												  ('sprites/man_walking_6.png', 0.2)])
-		self.running_anim = pyganim.PygAnimation([('sprites/man_running_1.png', 0.1),
-												  ('sprites/man_running_2.png', 0.1),
-												  ('sprites/man_running_3.png', 0.1),
-												  ('sprites/man_running_4.png', 0.1),
-												  ('sprites/man_running_5.png', 0.1),
-												  ('sprites/man_running_6.png', 0.1)])
-		self.running_stone_anim = pyganim.PygAnimation([('sprites/man_running_stone_1.png', 0.1),
-												  ('sprites/man_running_stone_2.png', 0.1),
-												  ('sprites/man_running_stone_3.png', 0.1),
-												  ('sprites/man_running_stone_4.png', 0.1),
-												  ('sprites/man_running_stone_5.png', 0.1),
-												  ('sprites/man_running_stone_6.png', 0.1)])
-		self.primary_stone_anim = pyganim.PygAnimation([('sprites/man_primary_stone_1.png', 0.2),
-												  ('sprites/man_primary_stone_2.png', 0.2),
-												  ('sprites/man_primary_stone_3.png', 0.2),
-												  ('sprites/man_primary_stone_4.png', 0.2),
-												  ('sprites/man_primary_stone_5.png', 0.2)])
+		self.walking_anim = pyganim.PygAnimation([('sprites/man_walking_1.png', 1),
+												  ('sprites/man_walking_2.png', 1),
+												  ('sprites/man_walking_3.png', 1),
+												  ('sprites/man_walking_4.png', 1),
+												  ('sprites/man_walking_5.png', 1),
+												  ('sprites/man_walking_6.png', 1)])
+		self.running_anim = pyganim.PygAnimation([('sprites/man_running_1.png', 1),
+												  ('sprites/man_running_2.png', 1),
+												  ('sprites/man_running_3.png', 1),
+												  ('sprites/man_running_4.png', 1),
+												  ('sprites/man_running_5.png', 1),
+												  ('sprites/man_running_6.png', 1)])
+		self.running_stone_anim = pyganim.PygAnimation([('sprites/man_running_stone_1.png', 1),
+												  ('sprites/man_running_stone_2.png', 1),
+												  ('sprites/man_running_stone_3.png', 1),
+												  ('sprites/man_running_stone_4.png', 1),
+												  ('sprites/man_running_stone_5.png', 1),
+												  ('sprites/man_running_stone_6.png', 1)])
+		self.primary_stone_anim = pyganim.PygAnimation([('sprites/man_primary_stone_1.png', 1),
+												  ('sprites/man_primary_stone_2.png', 1),
+												  ('sprites/man_primary_stone_3.png', 1),
+												  ('sprites/man_primary_stone_4.png', 1),
+												  ('sprites/man_primary_stone_5.png', 1)])
 		self.current_anim = self.walking_anim
 		self.action_step = 0
 		self.footsteps = self.sound_manager.load('sounds/footstep.wav')
